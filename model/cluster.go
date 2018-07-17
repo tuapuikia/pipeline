@@ -19,6 +19,7 @@ const unknown = "unknown"
 //TableName constants
 const (
 	TableNameClusters             = "clusters"
+	TableNameAlibabaProperties    = "alibaba_cluster_properties"
 	TableNameAmazonProperties     = "amazon_cluster_properties"
 	TableNameAmazonNodePools      = "amazon_node_pools"
 	TableNameAmazonEksProperties  = "amazon_eks_cluster_properties"
@@ -47,6 +48,7 @@ type ClusterModel struct {
 	Monitoring     bool
 	Logging        bool
 	StatusMessage  string `sql:"type:text;"`
+	Alibaba        AlibabaClusterModel
 	Amazon         AmazonClusterModel
 	Azure          AzureClusterModel
 	Eks            AmazonEksClusterModel
@@ -56,6 +58,30 @@ type ClusterModel struct {
 	Oracle         modelOracle.Cluster
 	Applications   []Application `gorm:"foreignkey:ClusterID"`
 	CreatedBy      uint
+}
+
+// AlibabaNodePoolModel describes Alibaba node groups model of a cluster
+type AlibabaNodePoolModel struct {
+	WorkerInstanceType       string
+	WorkerSystemDiskCategory string
+	WorkerSystemDiskSize     int
+	ImageID                  string
+	NumOfNodes               int
+}
+
+// AlibabaClusterModel describes the Alibaba cluster model
+type AlibabaClusterModel struct {
+	ClusterModelId           uint `gorm:"primary_key"`
+	ClusterID                string
+	RegionID                 string
+	ZoneID                   string
+	MasterInstanceType       string
+	MasterSystemDiskCategory string
+	MasterSystemDiskSize     int
+	LoginPassword            string
+	SNATEntry                bool
+	SSHFlags                 bool
+	NodePools                []*AlibabaNodePoolModel `gorm:"foreignkey:ClusterModelId"`
 }
 
 //AmazonClusterModel describes the amazon cluster model
@@ -280,6 +306,11 @@ func (cs *ClusterModel) String() string {
 	}
 
 	return buffer.String()
+}
+
+// TableName sets AlibabaClusterModel's table name
+func (AlibabaClusterModel) TableName() string {
+	return TableNameAlibabaProperties
 }
 
 // TableName sets AmazonClusterModel's table name

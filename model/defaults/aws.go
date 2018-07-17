@@ -3,6 +3,7 @@ package defaults
 import (
 	"github.com/banzaicloud/pipeline/database"
 	pkgCluster "github.com/banzaicloud/pipeline/pkg/cluster"
+	pkgAlibaba "github.com/banzaicloud/pipeline/pkg/cluster/alibaba"
 	pkgAmazon "github.com/banzaicloud/pipeline/pkg/cluster/amazon"
 	pkgAzure "github.com/banzaicloud/pipeline/pkg/cluster/azure"
 	"github.com/banzaicloud/pipeline/pkg/cluster/eks"
@@ -114,11 +115,12 @@ func (d *AWSProfile) GetProfile() *pkgCluster.ClusterProfileResponse {
 		Location: d.Location,
 		Cloud:    pkgCluster.Amazon,
 		Properties: struct {
-			Amazon *pkgAmazon.ClusterProfileAmazon `json:"amazon,omitempty"`
-			Azure  *pkgAzure.ClusterProfileAzure   `json:"azure,omitempty"`
-			Eks    *eks.ClusterProfileEks          `json:"eks,omitempty"`
-			Google *pkgGoogle.ClusterProfileGoogle `json:"google,omitempty"`
-			Oracle *oracle.Cluster                 `json:"oracle,omitempty"`
+			Alibaba *pkgAlibaba.ClusterProfileAlibaba `json:"alibaba,omitempty"`
+			Amazon  *pkgAmazon.ClusterProfileAmazon   `json:"amazon,omitempty"`
+			Azure   *pkgAzure.ClusterProfileAzure     `json:"azure,omitempty"`
+			Eks     *eks.ClusterProfileEks            `json:"eks,omitempty"`
+			Google  *pkgGoogle.ClusterProfileGoogle   `json:"google,omitempty"`
+			Oracle  *oracle.Cluster                   `json:"oracle,omitempty"`
 		}{
 			Amazon: &pkgAmazon.ClusterProfileAmazon{
 				NodePools: nodePools,

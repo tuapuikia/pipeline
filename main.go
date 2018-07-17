@@ -2,9 +2,8 @@ package main
 
 import (
 	"fmt"
-	"os"
-
 	"net/http"
+	"os"
 
 	"github.com/Depado/ginprom"
 	"github.com/banzaicloud/pipeline/api"
@@ -18,14 +17,13 @@ import (
 	"github.com/banzaicloud/pipeline/model/defaults"
 	"github.com/banzaicloud/pipeline/notify"
 	"github.com/banzaicloud/pipeline/objectstore"
+	modelOracle "github.com/banzaicloud/pipeline/pkg/providers/oracle/model"
+	modelOracleObjectstore "github.com/banzaicloud/pipeline/pkg/providers/oracle/model/objectstore"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-
-	modelOracle "github.com/banzaicloud/pipeline/pkg/providers/oracle/model"
-	modelOracleObjectstore "github.com/banzaicloud/pipeline/pkg/providers/oracle/model/objectstore"
 )
 
 //Version of Pipeline
@@ -66,6 +64,7 @@ func main() {
 	// Creating tables if not exists
 	logger.Infoln("Create table(s):",
 		model.ClusterModel{}.TableName(),
+		model.AlibabaClusterModel{}.TableName(),
 		model.AmazonClusterModel{}.TableName(),
 		model.AmazonNodePoolsModel{}.TableName(),
 		model.AmazonEksClusterModel{}.TableName(),
@@ -78,6 +77,8 @@ func main() {
 	// Create tables
 	if err := db.AutoMigrate(
 		&model.ClusterModel{},
+		&model.AlibabaClusterModel{},
+		&model.AlibabaNodePoolModel{},
 		&model.AmazonClusterModel{},
 		&model.AmazonNodePoolsModel{},
 		&model.AmazonEksClusterModel{},
@@ -101,6 +102,7 @@ func main() {
 		&defaults.AKSNodePoolProfile{},
 		&defaults.GKEProfile{},
 		&defaults.GKENodePoolProfile{},
+		&objectstore.ManagedAlibabaBucket{},
 		&objectstore.ManagedAmazonBucket{},
 		&objectstore.ManagedAzureBlobStore{},
 		&objectstore.ManagedGoogleBucket{},

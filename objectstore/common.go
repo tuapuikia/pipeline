@@ -46,6 +46,11 @@ type ObjectStore interface {
 // the passed in secret and organization
 func NewObjectStore(cloudType string, s *secret.SecretItemResponse, organization *auth.Organization) (ObjectStore, error) {
 	switch cloudType {
+	case pkgCluster.Alibaba:
+		return &AlibabaObjectStore{
+			secret: s,
+			org:    organization,
+		}, nil
 	case pkgCluster.Amazon:
 		return &AmazonObjectStore{
 			secret: s,

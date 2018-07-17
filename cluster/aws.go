@@ -118,7 +118,7 @@ func (c *AWSCluster) GetModel() *model.ClusterModel {
 
 //CreateAWSClusterFromModel creates ClusterModel struct from the kubicorn model
 func CreateAWSClusterFromModel(clusterModel *model.ClusterModel) (*AWSCluster, error) {
-	log.Debug("Create ClusterModel struct from the request")
+	log.Debug("Create ClusterModel struct from the model")
 	awsCluster := AWSCluster{
 		modelCluster: clusterModel,
 	}

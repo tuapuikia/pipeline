@@ -3,6 +3,7 @@ package defaults
 import (
 	"github.com/banzaicloud/pipeline/database"
 	pkgCluster "github.com/banzaicloud/pipeline/pkg/cluster"
+	"github.com/banzaicloud/pipeline/pkg/cluster/alibaba"
 	"github.com/banzaicloud/pipeline/pkg/cluster/amazon"
 	"github.com/banzaicloud/pipeline/pkg/cluster/azure"
 	"github.com/banzaicloud/pipeline/pkg/cluster/eks"
@@ -64,11 +65,12 @@ func (d *EKSProfile) GetProfile() *pkgCluster.ClusterProfileResponse {
 		Location: d.Region,
 		Cloud:    pkgCluster.Amazon,
 		Properties: struct {
-			Amazon *amazon.ClusterProfileAmazon `json:"amazon,omitempty"`
-			Azure  *azure.ClusterProfileAzure   `json:"azure,omitempty"`
-			Eks    *eks.ClusterProfileEks       `json:"eks,omitempty"`
-			Google *google.ClusterProfileGoogle `json:"google,omitempty"`
-			Oracle *oracle.Cluster              `json:"oracle,omitempty"`
+			Alibaba *alibaba.ClusterProfileAlibaba `json:"alibaba,omitempty"`
+			Amazon  *amazon.ClusterProfileAmazon   `json:"amazon,omitempty"`
+			Azure   *azure.ClusterProfileAzure     `json:"azure,omitempty"`
+			Eks     *eks.ClusterProfileEks         `json:"eks,omitempty"`
+			Google  *google.ClusterProfileGoogle   `json:"google,omitempty"`
+			Oracle  *oracle.Cluster                `json:"oracle,omitempty"`
 		}{
 			Eks: &eks.ClusterProfileEks{
 				Version: d.Version,

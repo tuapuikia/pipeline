@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 
+	"github.com/banzaicloud/pipeline/pkg/cluster/alibaba"
 	"github.com/banzaicloud/pipeline/pkg/cluster/amazon"
 	"github.com/banzaicloud/pipeline/pkg/cluster/azure"
 	"github.com/banzaicloud/pipeline/pkg/cluster/dummy"
@@ -32,6 +33,7 @@ const (
 
 // Cluster provider constants
 const (
+	Alibaba    = "alibaba"
 	Amazon     = "amazon"
 	AmazonEKS  = "eks"
 	Azure      = "azure"
@@ -80,13 +82,14 @@ type CreateClusterRequest struct {
 	ProfileName string    `json:"profileName"`
 	PostHooks   PostHooks `json:"postHooks"`
 	Properties  struct {
-		CreateClusterAmazon *amazon.CreateClusterAmazon  `json:"amazon,omitempty"`
-		CreateClusterEks    *eks.CreateClusterEks        `json:"eks,omitempty"`
-		CreateClusterAzure  *azure.CreateClusterAzure    `json:"azure,omitempty"`
-		CreateClusterGoogle *google.CreateClusterGoogle  `json:"google,omitempty"`
-		CreateClusterDummy  *dummy.CreateClusterDummy    `json:"dummy,omitempty"`
-		CreateKubernetes    *kubernetes.CreateKubernetes `json:"kubernetes,omitempty"`
-		CreateClusterOracle *oracle.Cluster              `json:"oracle,omitempty"`
+		CreateClusterAlibaba *alibaba.CreateClusterAlibaba `json:"alibaba,omitempty"`
+		CreateClusterAmazon  *amazon.CreateClusterAmazon   `json:"amazon,omitempty"`
+		CreateClusterEks     *eks.CreateClusterEks         `json:"eks,omitempty"`
+		CreateClusterAzure   *azure.CreateClusterAzure     `json:"azure,omitempty"`
+		CreateClusterGoogle  *google.CreateClusterGoogle   `json:"google,omitempty"`
+		CreateClusterDummy   *dummy.CreateClusterDummy     `json:"dummy,omitempty"`
+		CreateKubernetes     *kubernetes.CreateKubernetes  `json:"kubernetes,omitempty"`
+		CreateClusterOracle  *oracle.Cluster               `json:"oracle,omitempty"`
 	} `json:"properties" binding:"required"`
 }
 
@@ -169,12 +172,13 @@ type DeleteClusterResponse struct {
 
 // UpdateProperties describes Pipeline's UpdateCluster request properties
 type UpdateProperties struct {
-	Amazon *amazon.UpdateClusterAmazon `json:"amazon,omitempty"`
-	Eks    *eks.UpdateClusterAmazonEKS `json:"eks,omitempty"`
-	Azure  *azure.UpdateClusterAzure   `json:"azure,omitempty"`
-	Google *google.UpdateClusterGoogle `json:"google,omitempty"`
-	Dummy  *dummy.UpdateClusterDummy   `json:"dummy,omitempty"`
-	Oracle *oracle.Cluster             `json:"oracle,omitempty"`
+	Alibaba *alibaba.UpdateClusterAlibaba `json:"alibaba,omitempty"`
+	Amazon  *amazon.UpdateClusterAmazon   `json:"amazon,omitempty"`
+	Eks     *eks.UpdateClusterAmazonEKS   `json:"eks,omitempty"`
+	Azure   *azure.UpdateClusterAzure     `json:"azure,omitempty"`
+	Google  *google.UpdateClusterGoogle   `json:"google,omitempty"`
+	Dummy   *dummy.UpdateClusterDummy     `json:"dummy,omitempty"`
+	Oracle  *oracle.Cluster               `json:"oracle,omitempty"`
 }
 
 // String method prints formatted update request fields
@@ -240,6 +244,9 @@ func (r *CreateClusterRequest) Validate() error {
 	}
 
 	switch r.Cloud {
+	case Alibaba:
+		// alibaba validate
+		return r.Properties.CreateClusterAlibaba.Validate()
 	case Amazon:
 		// amazon validate
 		if r.Properties.CreateClusterAmazon != nil {
@@ -284,6 +291,9 @@ func (r *UpdateClusterRequest) Validate() error {
 	r.preValidate()
 
 	switch r.Cloud {
+	case Alibaba:
+		// alibaba validate
+		return r.Alibaba.Validate()
 	case Amazon:
 		// amazon validate
 		if r.Amazon != nil {
@@ -311,26 +321,38 @@ func (r *UpdateClusterRequest) Validate() error {
 
 // preValidate resets other cloud type fields
 func (r *UpdateClusterRequest) preValidate() {
+
 	switch r.Cloud {
+	case Alibaba:
+		// reset other fields
+		r.Amazon = nil
+		r.Azure = nil
+		r.Google = nil
+		r.Oracle = nil
+		break
 	case Amazon:
 		// reset other fields
+		r.Alibaba = nil
 		r.Azure = nil
 		r.Google = nil
 		r.Oracle = nil
 		break
 	case Azure:
 		// reset other fields
+		r.Alibaba = nil
 		r.Amazon = nil
 		r.Google = nil
 		r.Oracle = nil
 		break
 	case Google:
 		// reset other fields
+		r.Alibaba = nil
 		r.Amazon = nil
 		r.Azure = nil
 		r.Oracle = nil
 	case Oracle:
 		// reset other fields
+		r.Alibaba = nil
 		r.Amazon = nil
 		r.Azure = nil
 		r.Google = nil
@@ -343,11 +365,12 @@ type ClusterProfileResponse struct {
 	Location   string `json:"location" binding:"required"`
 	Cloud      string `json:"cloud" binding:"required"`
 	Properties struct {
-		Amazon *amazon.ClusterProfileAmazon `json:"amazon,omitempty"`
-		Azure  *azure.ClusterProfileAzure   `json:"azure,omitempty"`
-		Eks    *eks.ClusterProfileEks       `json:"eks,omitempty"`
-		Google *google.ClusterProfileGoogle `json:"google,omitempty"`
-		Oracle *oracle.Cluster              `json:"oracle,omitempty"`
+		Alibaba *alibaba.ClusterProfileAlibaba `json:"alibaba,omitempty"`
+		Amazon  *amazon.ClusterProfileAmazon   `json:"amazon,omitempty"`
+		Azure   *azure.ClusterProfileAzure     `json:"azure,omitempty"`
+		Eks     *eks.ClusterProfileEks         `json:"eks,omitempty"`
+		Google  *google.ClusterProfileGoogle   `json:"google,omitempty"`
+		Oracle  *oracle.Cluster                `json:"oracle,omitempty"`
 	} `json:"properties" binding:"required"`
 }
 
@@ -357,11 +380,12 @@ type ClusterProfileRequest struct {
 	Location   string `json:"location" binding:"required"`
 	Cloud      string `json:"cloud" binding:"required"`
 	Properties struct {
-		Amazon *amazon.ClusterProfileAmazon `json:"amazon,omitempty"`
-		Azure  *azure.ClusterProfileAzure   `json:"azure,omitempty"`
-		Eks    *eks.ClusterProfileEks       `json:"eks,omitempty"`
-		Google *google.ClusterProfileGoogle `json:"google,omitempty"`
-		Oracle *oracle.Cluster              `json:"oracle,omitempty"`
+		Alibaba *alibaba.ClusterProfileAlibaba `json:"alibaba,omitempty"`
+		Amazon  *amazon.ClusterProfileAmazon   `json:"amazon,omitempty"`
+		Azure   *azure.ClusterProfileAzure     `json:"azure,omitempty"`
+		Eks     *eks.ClusterProfileEks         `json:"eks,omitempty"`
+		Google  *google.ClusterProfileGoogle   `json:"google,omitempty"`
+		Oracle  *oracle.Cluster                `json:"oracle,omitempty"`
 	} `json:"properties" binding:"required"`
 }
 
@@ -498,17 +522,24 @@ func (p *ClusterProfileResponse) CreateClusterRequest(createRequest *CreateClust
 		SecretId:    createRequest.SecretId,
 		ProfileName: p.Name,
 		Properties: struct {
-			CreateClusterAmazon *amazon.CreateClusterAmazon  `json:"amazon,omitempty"`
-			CreateClusterEks    *eks.CreateClusterEks        `json:"eks,omitempty"`
-			CreateClusterAzure  *azure.CreateClusterAzure    `json:"azure,omitempty"`
-			CreateClusterGoogle *google.CreateClusterGoogle  `json:"google,omitempty"`
-			CreateClusterDummy  *dummy.CreateClusterDummy    `json:"dummy,omitempty"`
-			CreateKubernetes    *kubernetes.CreateKubernetes `json:"kubernetes,omitempty"`
-			CreateClusterOracle *oracle.Cluster              `json:"oracle,omitempty"`
+			CreateClusterAlibaba *alibaba.CreateClusterAlibaba `json:"alibaba,omitempty"`
+			CreateClusterAmazon  *amazon.CreateClusterAmazon   `json:"amazon,omitempty"`
+			CreateClusterEks     *eks.CreateClusterEks         `json:"eks,omitempty"`
+			CreateClusterAzure   *azure.CreateClusterAzure     `json:"azure,omitempty"`
+			CreateClusterGoogle  *google.CreateClusterGoogle   `json:"google,omitempty"`
+			CreateClusterDummy   *dummy.CreateClusterDummy     `json:"dummy,omitempty"`
+			CreateKubernetes     *kubernetes.CreateKubernetes  `json:"kubernetes,omitempty"`
+			CreateClusterOracle  *oracle.Cluster               `json:"oracle,omitempty"`
 		}{},
 	}
 
 	switch p.Cloud {
+	case Alibaba:
+		response.Properties.CreateClusterAlibaba = &alibaba.CreateClusterAlibaba{
+			RegionID:  p.Properties.Alibaba.RegionID,
+			ZoneID:    p.Properties.Alibaba.ZoneID,
+			NodePools: p.Properties.Alibaba.NodePools,
+		}
 	case Amazon:
 		if response.Properties.CreateClusterAmazon != nil {
 			response.Properties.CreateClusterAmazon = &amazon.CreateClusterAmazon{

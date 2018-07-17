@@ -1,6 +1,7 @@
 package storage // CreateBucketRequest describes a storage bucket creation
 
 import (
+	"github.com/banzaicloud/pipeline/pkg/cluster/alibaba"
 	"github.com/banzaicloud/pipeline/pkg/cluster/amazon"
 	"github.com/banzaicloud/pipeline/pkg/cluster/azure"
 	"github.com/banzaicloud/pipeline/pkg/cluster/google"
@@ -12,10 +13,11 @@ type CreateBucketRequest struct {
 	SecretId   string `json:"secret_id" binding:"required"`
 	Name       string `json:"name" binding:"required"`
 	Properties struct {
-		CreateAmazonObjectStoreBucketProperties *amazon.CreateAmazonObjectStoreBucketProperties `json:"amazon,omitempty"`
-		CreateAzureObjectStoreBucketProperties  *azure.CreateAzureObjectStoreBucketProperties   `json:"azure,omitempty"`
-		CreateGoogleObjectStoreBucketProperties *google.CreateGoogleObjectStoreBucketProperties `json:"google,omitempty"`
-		CreateOracleObjectStoreBucketProperties *oracle.CreateObjectStoreBucketProperties       `json:"oracle,omitempty"`
+		CreateAlibabaObjectStoreBucketProperties *alibaba.CreateAlibabaObjectStoreBucketProperties `json:"alibaba,omitempty"`
+		CreateAmazonObjectStoreBucketProperties  *amazon.CreateAmazonObjectStoreBucketProperties   `json:"amazon,omitempty"`
+		CreateAzureObjectStoreBucketProperties   *azure.CreateAzureObjectStoreBucketProperties     `json:"azure,omitempty"`
+		CreateGoogleObjectStoreBucketProperties  *google.CreateGoogleObjectStoreBucketProperties   `json:"google,omitempty"`
+		CreateOracleObjectStoreBucketProperties  *oracle.CreateObjectStoreBucketProperties         `json:"oracle,omitempty"`
 	} `json:"properties" binding:"required"`
 }
 
