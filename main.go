@@ -61,19 +61,6 @@ func main() {
 	// Initialize auth
 	auth.Init()
 
-	// Creating tables if not exists
-	logger.Infoln("Create table(s):",
-		model.ClusterModel{}.TableName(),
-		model.AlibabaClusterModel{}.TableName(),
-		model.AmazonClusterModel{}.TableName(),
-		model.AmazonNodePoolsModel{}.TableName(),
-		model.AmazonEksClusterModel{}.TableName(),
-		model.AzureClusterModel{}.TableName(),
-		model.AzureNodePoolModel{}.TableName(),
-		model.GoogleClusterModel{}.TableName(),
-		model.GoogleNodePoolModel{}.TableName(),
-	)
-
 	// Create tables
 	if err := db.AutoMigrate(
 		&model.ClusterModel{},
